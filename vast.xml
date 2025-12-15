@@ -1,30 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-    iion VAST Tag - Main Entry Point
-
-    GAM points to this file. It redirects to the current creative's VAST XML
-    with cache-busting parameters.
-
-    IMPORTANT: This is a VAST Wrapper that points to the actual creative.
-    Update the VASTAdTagURI below only if you change the creative location.
--->
-<VAST version="4.2" xmlns="http://www.iab.com/VAST">
-    <Ad id="iion-wrapper">
-        <Wrapper followAdditionalWrappers="0" allowMultipleAds="0">
-            <AdSystem version="1.0">iion Ad Server</AdSystem>
-
-            <!--
-                This wrapper redirects to the actual VAST creative.
-                The [timestamp] macro will be replaced by the ad player with current time.
-                If your player doesn't support macros, the creative's VAST handles cache-busting internally.
-            -->
-            <VASTAdTagURI><![CDATA[creatives/current/vast.xml?cb=[timestamp]]]></VASTAdTagURI>
-
-            <Error><![CDATA[https://example.com/error?code=[ERRORCODE]]]></Error>
-
-            <Impression id="iion-wrapper-impression"><![CDATA[https://example.com/impression?type=wrapper]]></Impression>
-
-            <Creatives></Creatives>
-        </Wrapper>
-    </Ad>
+<VAST xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0">
+<Ad id="iion-vpaid-playable">
+<InLine>
+<AdSystem version="1.0">iionVPAID</AdSystem>
+<AdTitle>VPAID Playable Ad</AdTitle>
+<Description>Playable ad using VPAID framework - loads interactive overlay on video</Description>
+<Impression>
+<![CDATA[https://yourdomain.com/impression]]>
+</Impression>
+<Creatives>
+<Creative sequence="1">
+<Linear>
+<Duration>00:00:30</Duration>
+<TrackingEvents>
+<Tracking event="start">
+<![CDATA[https://yourdomain.com/start]]>
+</Tracking>
+<Tracking event="firstQuartile">
+<![CDATA[https://yourdomain.com/firstQuartile]]>
+</Tracking>
+<Tracking event="midpoint">
+<![CDATA[https://yourdomain.com/midpoint]]>
+</Tracking>
+<Tracking event="thirdQuartile">
+<![CDATA[https://yourdomain.com/thirdQuartile]]>
+</Tracking>
+<Tracking event="complete">
+<![CDATA[https://yourdomain.com/complete]]>
+</Tracking>
+</TrackingEvents>
+<VideoClicks>
+<ClickThrough>
+<![CDATA[https://yourdomain.com/clickthrough]]>
+</ClickThrough>
+</VideoClicks>
+<MediaFiles>
+<MediaFile delivery="progressive" type="application/javascript" apiFramework="VPAID" width="640" height="360">
+<![CDATA[https://creativehubiion.github.io/iion-vast-tag/creatives/current/vpaid_playable.js]]>
+</MediaFile>
+<MediaFile delivery="progressive" type="video/mp4" width="640" height="360" scalable="true" maintainAspectRatio="true">
+<![CDATA[https://creativehubiion.github.io/iion-vast-tag/creatives/current/cookingVideo.mp4]]>
+</MediaFile>
+</MediaFiles>
+</Linear>
+</Creative>
+</Creatives>
+</InLine>
+</Ad>
 </VAST>

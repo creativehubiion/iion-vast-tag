@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <VAST xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0">
-<Ad id="123456">
+<Ad id="iion-vpaid-playable">
 <InLine>
 <AdSystem version="1.0">iionVPAID</AdSystem>
 <AdTitle>VPAID Playable Ad</AdTitle>
 <Description>Playable ad using VPAID framework - loads interactive overlay on video</Description>
 <Impression>
-<![CDATA[ https://yourdomain.com/impression ]]>
+<![CDATA[https://yourdomain.com/impression]]>
 </Impression>
 <Creatives>
 <Creative sequence="1">
@@ -14,34 +14,32 @@
 <Duration>00:00:30</Duration>
 <TrackingEvents>
 <Tracking event="start">
-<![CDATA[ https://yourdomain.com/start ]]>
+<![CDATA[https://yourdomain.com/start]]>
 </Tracking>
 <Tracking event="firstQuartile">
-<![CDATA[ https://yourdomain.com/firstQuartile ]]>
+<![CDATA[https://yourdomain.com/firstQuartile]]>
 </Tracking>
 <Tracking event="midpoint">
-<![CDATA[ https://yourdomain.com/midpoint ]]>
+<![CDATA[https://yourdomain.com/midpoint]]>
 </Tracking>
 <Tracking event="thirdQuartile">
-<![CDATA[ https://yourdomain.com/thirdQuartile ]]>
+<![CDATA[https://yourdomain.com/thirdQuartile]]>
 </Tracking>
 <Tracking event="complete">
-<![CDATA[ https://yourdomain.com/complete ]]>
+<![CDATA[https://yourdomain.com/complete]]>
 </Tracking>
 </TrackingEvents>
 <VideoClicks>
 <ClickThrough>
-<![CDATA[ https://yourdomain.com/clickthrough ]]>
+<![CDATA[https://yourdomain.com/clickthrough]]>
 </ClickThrough>
 </VideoClicks>
 <MediaFiles>
-<!--  VPAID JavaScript Unit - This is the interactive wrapper (self-hosted)  -->
 <MediaFile delivery="progressive" type="application/javascript" apiFramework="VPAID" width="640" height="360">
-<![CDATA[ vpaid_playable.js ]]>
+<![CDATA[https://creativehubiion.github.io/iion-vast-tag/creatives/current/vpaid_playable.js]]>
 </MediaFile>
-<!--  Fallback MP4 for non-VPAID players (self-hosted)  -->
 <MediaFile delivery="progressive" type="video/mp4" width="640" height="360" scalable="true" maintainAspectRatio="true">
-<![CDATA[ cookingVideo.mp4 ]]>
+<![CDATA[https://creativehubiion.github.io/iion-vast-tag/creatives/current/cookingVideo.mp4]]>
 </MediaFile>
 </MediaFiles>
 </Linear>
