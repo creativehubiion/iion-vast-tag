@@ -28,8 +28,8 @@ var VPAIDPlayableAd = function() {
   // Custom properties
   this.baseUrl_ = this.getBaseUrl_();
   this.videoUrl_ = this.baseUrl_ + 'cookingVideo.mp4';
-  // Load the Phaser game from the display ad tag repo as the overlay
-  this.overlayUrl_ = 'https://creativehubiion.github.io/iion-display-ad-tag/creatives/current/index.html';
+  // Load the HTML5 game as the overlay
+  this.overlayUrl_ = 'https://tech-iion.github.io/advertiser-creatives/allkindsLandscape/';
   this.overlayIframe_ = null;
   this.started_ = false;
   this.clickThrough_ = 'https://yourdomain.com/clickthrough';
