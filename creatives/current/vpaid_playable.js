@@ -25,10 +25,11 @@ var VPAIDPlayableAd = function() {
     volume: 1.0
   };
 
-  // Custom properties - using relative paths (same directory as this JS file)
+  // Custom properties
   this.baseUrl_ = this.getBaseUrl_();
   this.videoUrl_ = this.baseUrl_ + 'cookingVideo.mp4';
-  this.overlayUrl_ = this.baseUrl_ + 'simid_overlay.html';
+  // Load the Phaser game from the display ad tag repo as the overlay
+  this.overlayUrl_ = 'https://creativehubiion.github.io/iion-display-ad-tag/creatives/current/index.html';
   this.overlayIframe_ = null;
   this.started_ = false;
   this.clickThrough_ = 'https://yourdomain.com/clickthrough';
