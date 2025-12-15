@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
+}
+iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  z-index: 9999;
+}
+</style>
+</head>
+<body>
+<script>
+const ProtocolMessage = {
+  CREATE_SESSION: 'createSession',
+  RESOLVE: 'resolve',
+  REJECT: 'reject'
+};
+
+const PlayerMessage = {
+  INIT: 'Player:init',
+  START_CREATIVE: 'Player:startCreative',
+  AD_STOPPED: 'Player:adStopped',
+  FATAL_ERROR: 'Player:fatalError'
+};
+
+const EventsThatRequireResponse = [
+  ProtocolMessage.CREATE_SESSION,
+  PlayerMessage.INIT,
+  PlayerMessage.START_CREATIVE,
+  PlayerMessage.AD_STOPPED,
+  PlayerMessage.FATAL_ERROR
+];
+
+class SimidProtocol {
+  constructor() {
+    this.listeners_ = {};
+    this.sessionId_ = '';
+    this.nextMessageId_ = 1;
+    this.target_ = window.parent;
+    this.resolutionListeners_ = {};
+    window.addEventListener('message', this.receiveMessage.bind(this), false);
+  }
+
+  createSession() {
+    this.generateSessionId_();
+    fetchAPI(window.trackingType + "SIMID:sessionCreated");
+    this.sendMessage(ProtocolMessage.CREATE_SESSION).then(
+      () => console.log('SIMID: Session created.'),
+      () => console.warn('SIMID: Session rejected.')
+    );
+  }
+
+  sendMessage(messageType, messageArgs = {}) {
+    const messageId = this.nextMessageId_++;
+    const type = (messageType === ProtocolMessage.CREATE_SESSION) ? messageType : `SIMID:${messageType}`;
+    const message = {
+      sessionId: this.sessionId_,
+      messageId: messageId,
+      type: type,
+      timestamp: Date.now(),
+      args: messageArgs
+    };
+    if (EventsThatRequireResponse.includes(messageType)) {
+      return new Promise((resolve, reject) => {
+        this.addResolveRejectListener_(messageId, resolve, reject);
+        this.target_.postMessage(JSON.stringify(message), '*');
+      });
+    } else {
+      this.target_.postMessage(JSON.stringify(message), '*');
+      return Promise.resolve();
+    }
+  }
+
+  receiveMessage(event) {
+    if (!event || !event.data) return;
+    let data;
+    try {
+      data = JSON.parse(event.data);
+    } catch (e) {
+      console.warn("Invalid SIMID message", e);
+      return;
+    }
+    if (!data || !data.type) return;
+    const sessionId = data.sessionId;
+    const type = data.type;
+    const isCreatingSession = this.sessionId_ === '' && type === ProtocolMessage.CREATE_SESSION;
+    const isSessionIdMatch = this.sessionId_ === sessionId;
+    if (!isCreatingSession && !isSessionIdMatch) return;
+    if (type === ProtocolMessage.CREATE_SESSION) {
+      this.sessionId_ = sessionId;
+      this.resolve(data);
+      (this.listeners_[type] || []).forEach(listener => listener(data));
+    } else if (type === ProtocolMessage.RESOLVE || type === ProtocolMessage.REJECT) {
+      const args = data.args;
+      const correlatingId = args.messageId;
+      const resolutionFn = this.resolutionListeners_[correlatingId];
+      if (resolutionFn) {
+        resolutionFn(data);
+        delete this.resolutionListeners_[correlatingId];
+      }
+    } else if (type.startsWith('SIMID:')) {
+      const shortType = type.substring(6);
+      (this.listeners_[shortType] || []).forEach(listener => listener(data));
+    }
+  }
+
+  resolve(incomingMessage, outgoingArgs = {}) {
+    const messageId = this.nextMessageId_++;
+    const message = {
+      sessionId: this.sessionId_,
+      messageId,
+      type: ProtocolMessage.RESOLVE,
+      timestamp: Date.now(),
+      args: { messageId: incomingMessage.messageId, value: outgoingArgs }
+    };
+    this.target_.postMessage(JSON.stringify(message), '*');
+  }
+
+  addResolveRejectListener_(messageId, resolve, reject) {
+    const listener = (data) => {
+      if (data.type === ProtocolMessage.RESOLVE) resolve(data.args.value);
+      else if (data.type === ProtocolMessage.REJECT) reject(data.args.value);
+    };
+    this.resolutionListeners_[messageId] = listener.bind(this);
+  }
+
+  generateSessionId_() {
+    const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    this.sessionId_ = `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+  }
+
+  addListener(messageType, callback) {
+    if (!this.listeners_[messageType]) this.listeners_[messageType] = [];
+    this.listeners_[messageType].push(callback);
+  }
+
+  setMessageTarget(target) {
+    this.target_ = target;
+  }
+}
+
+window.onload = function () {
+  const simid = new SimidProtocol();
+  simid.createSession();
+  simid.addListener('Player:init', (message) => {
+    simid.resolve(message);
+    fetchAPI(window.trackingType + "SIMID:initialized");
+  });
+  simid.addListener('Player:startCreative', (message) => {
+    simid.resolve(message);
+    fetchAPI(window.trackingType + "SIMID:creativeStarted");
+  });
+  simid.addListener('Player:adStopped', (message) => {
+    simid.resolve(message);
+    fetchAPI(window.trackingType + "SIMID:adStopped");
+  });
+  simid.addListener('Player:fatalError', (message) => {
+    simid.resolve(message);
+  });
+};
+
+function fetchAPI(trackingURL) {
+  fetch(trackingURL, { method: "GET" })
+    .then((response) => console.log("Tracking sent:", response.status))
+    .catch((error) => console.error("Tracking error:", error));
+}
+
+window.trackingType = "https://staging-dmp-producer.iion.io/tracker/impressions?platform=RTB&campaign_id=%%campaignId%%&publisher_id=%%pubId%%&creative_id=%%creativeId%%&request_id=%%requestId%%&user_id=%%userId%%&ip_address=%%ip%%&app_id_bundle_id=%%bundle%%&maid=%%ifa%%&app_name=%%appName%%&os=%%os%%&user_agent=%%userAgentEnc%%&latitude=%%lat%%&longitude=%%lon%%&page_url=%%pageUrl%%&country=%%country%%&device_make=%%deviceMake%%&domain=%%domain%%&height=%%height%%&width=%%width%%&video_min_duration=%%videoMinDuration%%&video_max_duration=%%videoMaxDuration%%&content_genre=%%contgenre%%&content_cat=%%contcat%%&gdpr=%%gdpr%%&gdpr_consent=%%gdprConsent%%&demand_id=%%demandId%%&line_item=%%adgroupId%%&event_name=";
+
+window.setTracker = "%%clickUrl%%";
+</script>
+</body>
+</html>
