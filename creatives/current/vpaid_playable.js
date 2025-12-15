@@ -244,18 +244,34 @@ VPAIDPlayableAd.prototype.unsubscribe = function(eventName) {
 
 // Create the interactive overlay iframe
 VPAIDPlayableAd.prototype.createOverlay_ = function() {
-  if (!this.slot_) return;
+  if (!this.slot_) {
+    console.log('[VPAID] No slot available for overlay');
+    return;
+  }
 
-  // Create container for overlay
+  console.log('[VPAID] Creating overlay with URL:', this.overlayUrl_);
+  console.log('[VPAID] Slot element:', this.slot_);
+
+  // Create container for overlay - high z-index to ensure it's on top
   var container = document.createElement('div');
-  container.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000;';
+  container.id = 'vpaid-overlay-container';
+  container.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:2147483647;pointer-events:none;';
 
   // Create iframe for the playable content
   this.overlayIframe_ = document.createElement('iframe');
+  this.overlayIframe_.id = 'vpaid-game-iframe';
   this.overlayIframe_.src = this.overlayUrl_;
-  this.overlayIframe_.style.cssText = 'width:100%;height:100%;border:none;pointer-events:auto;background:transparent;';
+  this.overlayIframe_.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;pointer-events:auto;';
   this.overlayIframe_.setAttribute('allowfullscreen', 'true');
   this.overlayIframe_.setAttribute('allow', 'autoplay; fullscreen');
+
+  // Log when iframe loads
+  this.overlayIframe_.onload = function() {
+    console.log('[VPAID] Game iframe loaded successfully');
+  };
+  this.overlayIframe_.onerror = function(e) {
+    console.error('[VPAID] Game iframe failed to load:', e);
+  };
 
   // Listen for messages from the overlay
   window.addEventListener('message', this.onOverlayMessage_.bind(this));
