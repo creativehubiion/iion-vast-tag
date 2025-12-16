@@ -46,42 +46,9 @@
 <Creative id="endcard" sequence="2">
 <CompanionAds required="all">
 <Companion id="mraid-playable-endcard" width="320" height="480" assetWidth="320" assetHeight="480" apiFramework="MRAID">
-<HTMLResource>
-<![CDATA[
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#000}
-#playable-frame{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
-</style>
-</head>
-<body>
-<script src="mraid.js"></script>
-<iframe id="playable-frame" src="https://tech-iion.github.io/advertiser-creatives/allkindsLandscape/" allowfullscreen></iframe>
-<script>
-(function(){
-  var CLICK_URL='https://allkinds.com/au/';
-  function init(){
-    if(typeof mraid==='undefined'){window.addEventListener('click',function(){window.open(CLICK_URL,'_blank')});return}
-    if(mraid.getState()==='loading'){mraid.addEventListener('ready',ready)}else{ready()}
-  }
-  function ready(){console.log('[MRAID] Ready')}
-  window.addEventListener('message',function(e){
-    if(e.data&&(e.data.type==='clickthrough'||e.data.action==='cta')){
-      if(typeof mraid!=='undefined'){mraid.open(CLICK_URL)}else{window.open(CLICK_URL,'_blank')}
-    }
-  });
-  init();
-})();
-</script>
-</body>
-</html>
-]]>
-</HTMLResource>
+<IFrameResource>
+<![CDATA[https://creativehubiion.github.io/iion-vast-tag/creatives/current/mraid_endcard.html]]>
+</IFrameResource>
 <CompanionClickThrough>
 <![CDATA[https://allkinds.com/au/]]>
 </CompanionClickThrough>
