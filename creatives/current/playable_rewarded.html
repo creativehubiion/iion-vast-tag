@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="ad.size" content="width=320,height=480">
+<title>AllKinds Playable Ad</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+#playable-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+#playable-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+#cta-button {
+  position: fixed;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+  color: white;
+  border: none;
+  padding: 16px 48px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+  display: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+#cta-button:active {
+  transform: translateX(-50%) scale(0.95);
+}
+</style>
+</head>
+<body>
+<!-- MRAID Script - SDK will inject the actual implementation -->
+<script src="mraid.js"></script>
+
+<div id="playable-container">
+  <iframe id="playable-frame"
+    src="https://tech-iion.github.io/advertiser-creatives/allkindsLandscape/"
+    allowfullscreen
+    allow="autoplay; fullscreen">
+  </iframe>
+</div>
+
+<button id="cta-button">Download Now</button>
+
+<script>
+(function() {
+  'use strict';
+
+  // Configuration
+  var CONFIG = {
+    clickUrl: 'https://allkinds.com/au/',
+    ctaDelay: 3000, // Show CTA after 3 seconds
+    trackingBase: 'https://staging-dmp-producer.iion.io/tracker/impressions?event_name='
+  };
+
+  var mraidReady = false;
+  var adStarted = false;
+
+  // Tracking function
+  function track(eventName) {
+    try {
+      var img = new Image();
+      img.src = CONFIG.trackingBase + encodeURIComponent(eventName) + '&cb=' + Date.now();
+    } catch (e) {
+      console.log('[Playable] Tracking error:', e);
+    }
+  }
+
+  // Handle click-through
+  function handleClick() {
+    console.log('[Playable] CTA clicked');
+    track('click');
+
+    if (mraidReady && typeof mraid !== 'undefined') {
+      mraid.open(CONFIG.clickUrl);
+    } else {
+      window.open(CONFIG.clickUrl, '_blank');
+    }
+  }
+
+  // Show CTA button
+  function showCTA() {
+    var ctaBtn = document.getElementById('cta-button');
+    if (ctaBtn) {
+      ctaBtn.style.display = 'block';
+    }
+  }
+
+  // Start the ad experience
+  function startAd() {
+    if (adStarted) return;
+    adStarted = true;
+
+    console.log('[Playable] Ad started');
+    track('start');
+
+    // Show CTA after delay
+    setTimeout(showCTA, CONFIG.ctaDelay);
+  }
+
+  // MRAID initialization
+  function initMraid() {
+    if (typeof mraid === 'undefined') {
+      console.log('[Playable] MRAID not available, using fallback');
+      startAd();
+      return;
+    }
+
+    function onReady() {
+      mraidReady = true;
+      console.log('[Playable] MRAID ready, state:', mraid.getState());
+
+      // Check if viewable
+      if (mraid.isViewable()) {
+        startAd();
+      } else {
+        mraid.addEventListener('viewableChange', function(viewable) {
+          if (viewable) {
+            startAd();
+          }
+        });
+      }
+    }
+
+    if (mraid.getState() === 'loading') {
+      mraid.addEventListener('ready', onReady);
+    } else {
+      onReady();
+    }
+  }
+
+  // Listen for messages from the playable iframe
+  window.addEventListener('message', function(event) {
+    if (!event.data) return;
+
+    var data = event.data;
+
+    // Handle click-through from iframe
+    if (data.type === 'clickthrough' || data.action === 'cta' || data.action === 'click') {
+      handleClick();
+    }
+
+    // Handle tracking events from iframe
+    if (data.type === 'tracking' && data.event) {
+      track(data.event);
+    }
+  });
+
+  // Set up CTA button click handler
+  document.addEventListener('DOMContentLoaded', function() {
+    var ctaBtn = document.getElementById('cta-button');
+    if (ctaBtn) {
+      ctaBtn.addEventListener('click', handleClick);
+      ctaBtn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        handleClick();
+      });
+    }
+
+    // Initialize MRAID
+    initMraid();
+  });
+
+  // Fallback if DOMContentLoaded already fired
+  if (document.readyState !== 'loading') {
+    initMraid();
+  }
+
+})();
+</script>
+</body>
+</html>
