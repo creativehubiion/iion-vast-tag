@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<VAST xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="4.1">
-<Ad id="iion-simid-playable">
+<VAST xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0">
+<Ad id="iion-video-with-endcard">
 <InLine>
-<AdSystem version="1.0">iionSIMID</AdSystem>
-<AdTitle>SIMID Playable Ad - AllKinds</AdTitle>
-<Description>Interactive playable ad using SIMID framework</Description>
+<AdSystem version="1.0">iion</AdSystem>
+<AdTitle>Video Ad with Playable End Card</AdTitle>
+<Description>Video ad followed by interactive playable end card</Description>
 <Impression>
 <![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=impression]]>
 </Impression>
 <Creatives>
-<Creative sequence="1">
+<!-- Main Video Creative -->
+<Creative id="video" sequence="1">
 <Linear>
-<Duration>00:00:30</Duration>
+<Duration>00:00:15</Duration>
 <TrackingEvents>
 <Tracking event="start">
 <![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=start]]>
@@ -35,18 +36,45 @@
 </ClickThrough>
 </VideoClicks>
 <MediaFiles>
-<!-- Fallback video for players that don't support SIMID -->
 <MediaFile delivery="progressive" type="video/mp4" width="640" height="360" scalable="true" maintainAspectRatio="true">
 <![CDATA[https://creativehubiion.github.io/iion-vast-tag/creatives/current/cookingVideo.mp4]]>
 </MediaFile>
-<!-- SIMID Interactive Creative File -->
-<InteractiveCreativeFile type="text/html" apiFramework="SIMID" variableDuration="true">
-<![CDATA[https://creativehubiion.github.io/iion-vast-tag/creatives/current/simid_overlay.html]]>
-</InteractiveCreativeFile>
 </MediaFiles>
 </Linear>
 </Creative>
+<!-- Playable End Card as Companion -->
+<Creative id="endcard" sequence="2">
+<CompanionAds required="all">
+<Companion id="playable-endcard" width="320" height="480" assetWidth="320" assetHeight="480">
+<IFrameResource>
+<![CDATA[https://tech-iion.github.io/advertiser-creatives/allkindsLandscape/]]>
+</IFrameResource>
+<CompanionClickThrough>
+<![CDATA[https://allkinds.com/au/]]>
+</CompanionClickThrough>
+<TrackingEvents>
+<Tracking event="creativeView">
+<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=endcard_view]]>
+</Tracking>
+</TrackingEvents>
+</Companion>
+</CompanionAds>
+</Creative>
 </Creatives>
+<!-- Extensions for end card configuration -->
+<Extensions>
+<Extension type="endcard">
+<EndCard>
+<Duration>30</Duration>
+<ClickThrough>
+<![CDATA[https://allkinds.com/au/]]>
+</ClickThrough>
+<IFrameResource>
+<![CDATA[https://tech-iion.github.io/advertiser-creatives/allkindsLandscape/]]>
+</IFrameResource>
+</EndCard>
+</Extension>
+</Extensions>
 </InLine>
 </Ad>
 </VAST>
