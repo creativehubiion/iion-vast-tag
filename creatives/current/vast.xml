@@ -12,7 +12,7 @@
 <!-- Main Video Creative -->
 <Creative id="video" sequence="1">
 <Linear>
-<Duration>00:00:15</Duration>
+<Duration>00:00:30</Duration>
 <TrackingEvents>
 <Tracking event="start">
 <![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=start]]>
