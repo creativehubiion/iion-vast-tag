@@ -7,8 +7,10 @@ html, body {
   padding: 0;
   background: transparent;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
-iframe {
+#playable-frame {
   position: absolute;
   top: 0;
   left: 0;
@@ -20,6 +22,9 @@ iframe {
 </style>
 </head>
 <body>
+<!-- Playable creative iframe -->
+<iframe id="playable-frame" src="https://tech-iion.github.io/advertiser-creatives/allkindsLandscape/" allowfullscreen allow="autoplay; fullscreen"></iframe>
+
 <script>
 const ProtocolMessage = {
   CREATE_SESSION: 'createSession',
