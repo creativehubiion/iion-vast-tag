@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="ad.size" content="width=320,height=480">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+#playable-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+#playable-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+#cta-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: none;
+}
+#cta-button {
+  background: #FF6B00;
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+</style>
+</head>
+<body>
+<!-- MRAID script - SDK will replace with actual implementation -->
+<script src="mraid.js"></script>
+
+<div id="playable-container">
+  <iframe id="playable-frame" src="https://tech-iion.github.io/advertiser-creatives/allkindsLandscape/" allowfullscreen></iframe>
+</div>
+
+<div id="cta-overlay">
+  <button id="cta-button">Learn More</button>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  var CLICK_URL = 'https://allkinds.com/au/';
+  var mraidReady = false;
+
+  // Wait for MRAID to be ready
+  function initMraid() {
+    if (typeof mraid === 'undefined') {
+      console.log('[MRAID] mraid.js not available, using fallback');
+      initFallback();
+      return;
+    }
+
+    if (mraid.getState() === 'loading') {
+      mraid.addEventListener('ready', onMraidReady);
+    } else {
+      onMraidReady();
+    }
+  }
+
+  function onMraidReady() {
+    mraidReady = true;
+    console.log('[MRAID] Ready, state:', mraid.getState());
+
+    // Listen for viewable changes
+    mraid.addEventListener('viewableChange', function(viewable) {
+      console.log('[MRAID] Viewable:', viewable);
+      if (viewable) {
+        showCTA();
+      }
+    });
+
+    // Check if already viewable
+    if (mraid.isViewable()) {
+      showCTA();
+    }
+  }
+
+  function initFallback() {
+    // Fallback for non-MRAID environments (testing)
+    console.log('[Fallback] Using window.open for clicks');
+    showCTA();
+  }
+
+  function showCTA() {
+    var ctaOverlay = document.getElementById('cta-overlay');
+    if (ctaOverlay) {
+      ctaOverlay.style.display = 'block';
+    }
+  }
+
+  function handleClick() {
+    console.log('[Click] Opening:', CLICK_URL);
+
+    if (mraidReady && typeof mraid !== 'undefined') {
+      // Use MRAID open for proper click tracking
+      mraid.open(CLICK_URL);
+    } else {
+      // Fallback
+      window.open(CLICK_URL, '_blank');
+    }
+  }
+
+  // Set up click handler
+  document.addEventListener('DOMContentLoaded', function() {
+    var ctaButton = document.getElementById('cta-button');
+    if (ctaButton) {
+      ctaButton.addEventListener('click', handleClick);
+    }
+
+    // Also listen for messages from iframe (if playable sends click events)
+    window.addEventListener('message', function(event) {
+      if (event.data && (event.data.type === 'clickthrough' || event.data.action === 'cta')) {
+        handleClick();
+      }
+    });
+  });
+
+  // Initialize
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMraid);
+  } else {
+    initMraid();
+  }
+})();
+</script>
+</body>
+</html>
