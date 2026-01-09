@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VAST Test Player - Limelight Ad Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .controls {
+      background: #16213e;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .control-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .control-row:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"], select {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 15px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #0f3460;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    input[type="text"]:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #333;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #444;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+      color: white;
+    }
+
+    .player-container {
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 16 / 9;
+      margin-bottom: 20px;
+    }
+
+    #video-player {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    #endcard-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      background: #000;
+    }
+
+    #endcard-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    .event-log {
+      background: #0f3460;
+      border-radius: 12px;
+      padding: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .event-log-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .event-item {
+      padding: 4px 0;
+      border-bottom: 1px solid #1a1a2e;
+      display: flex;
+      gap: 10px;
+    }
+
+    .event-time {
+      color: #667eea;
+      min-width: 60px;
+    }
+
+    .event-name {
+      color: #00e676;
+    }
+
+    .event-detail {
+      color: #888;
+      flex: 1;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: #16213e;
+      border: none;
+      border-radius: 8px 8px 0 0;
+      color: #888;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .tab.active {
+      background: #0f3460;
+      color: #fff;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .status-bar {
+      display: flex;
+      gap: 20px;
+      padding: 10px 15px;
+      background: #16213e;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #666;
+    }
+
+    .status-dot.active {
+      background: #00e676;
+    }
+
+    .status-dot.error {
+      background: #ff5252;
+    }
+
+    .info-box {
+      background: #16213e;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .info-box h3 {
+      margin-bottom: 10px;
+      color: #667eea;
+    }
+
+    .info-box code {
+      background: #0f3460;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>VAST Test Player - Limelight Preview</h1>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <div class="status-item">
+        <span id="status-vast" class="status-dot"></span>
+        <span>VAST Loaded</span>
+      </div>
+      <div class="status-item">
+        <span id="status-video" class="status-dot"></span>
+        <span>Video Ready</span>
+      </div>
+      <div class="status-item">
+        <span id="status-endcard" class="status-dot"></span>
+        <span>End Card</span>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="control-row">
+        <div style="flex: 1;">
+          <label>VAST Tag URL (or local file)</label>
+          <input type="text" id="vast-url" value="vast-template.xml" placeholder="Enter VAST URL or local file path">
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn-primary" onclick="loadVAST()">Load VAST</button>
+        </div>
+      </div>
+      <div class="control-row">
+        <button class="btn-secondary" onclick="playVideo()">Play</button>
+        <button class="btn-secondary" onclick="pauseVideo()">Pause</button>
+        <button class="btn-secondary" onclick="skipToEnd()">Skip to End</button>
+        <button class="btn-success" onclick="showEndCard()">Show End Card</button>
+        <button class="btn-secondary" onclick="resetPlayer()">Reset</button>
+      </div>
+    </div>
+
+    <!-- Player -->
+    <div class="player-container">
+      <video id="video-player" playsinline></video>
+      <div id="endcard-container">
+        <iframe id="endcard-frame" src="" allow="autoplay"></iframe>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-bar">
+      <div id="progress-fill" class="progress-fill"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('events')">Event Log</button>
+      <button class="tab" onclick="showTab('vast')">VAST XML</button>
+      <button class="tab" onclick="showTab('help')">Help</button>
+    </div>
+
+    <!-- Event Log Tab -->
+    <div id="tab-events" class="tab-content active">
+      <div class="event-log-title">
+        <span>Tracking Events</span>
+        <button class="btn-secondary" onclick="clearLog()" style="padding: 5px 10px; font-size: 12px;">Clear</button>
+      </div>
+      <div id="event-log" class="event-log">
+        <div class="event-item">
+          <span class="event-time">00:00</span>
+          <span class="event-name">ready</span>
+          <span class="event-detail">Test player initialized</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- VAST XML Tab -->
+    <div id="tab-vast" class="tab-content">
+      <div class="event-log">
+        <pre id="vast-xml" style="white-space: pre-wrap; word-wrap: break-word;">Load a VAST tag to see XML content...</pre>
+      </div>
+    </div>
+
+    <!-- Help Tab -->
+    <div id="tab-help" class="tab-content">
+      <div class="info-box">
+        <h3>Quick Start</h3>
+        <p>1. Enter the VAST tag URL in the input field (default: <code>vast-template.xml</code>)</p>
+        <p>2. Click <strong>Load VAST</strong> to parse and load the ad</p>
+        <p>3. Click <strong>Play</strong> to start the video</p>
+        <p>4. Video will auto-show end card when complete, or click <strong>Show End Card</strong></p>
+      </div>
+      <div class="info-box">
+        <h3>Testing Locally</h3>
+        <p>To test locally, run a simple HTTP server:</p>
+        <p><code>python -m http.server 8000</code></p>
+        <p>Then open <code>http://localhost:8000/test-player.html</code></p>
+      </div>
+      <div class="info-box">
+        <h3>Testing End Card Only</h3>
+        <p>Click <strong>Show End Card</strong> to preview the interactive end card without video.</p>
+        <p>End card URL: <code>endcard.html</code></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // STATE
+    // ============================================
+    var state = {
+      vastData: null,
+      videoUrl: null,
+      endcardUrl: 'endcard.html',
+      clickUrl: null,
+      startTime: Date.now()
+    };
+
+    var video = document.getElementById('video-player');
+    var endcardContainer = document.getElementById('endcard-container');
+    var endcardFrame = document.getElementById('endcard-frame');
+    var progressFill = document.getElementById('progress-fill');
+
+    // ============================================
+    // LOGGING
+    // ============================================
+    function log(eventName, detail) {
+      var logEl = document.getElementById('event-log');
+      var elapsed = ((Date.now() - state.startTime) / 1000).toFixed(2);
+      var item = document.createElement('div');
+      item.className = 'event-item';
+      item.innerHTML =
+        '<span class="event-time">' + elapsed + 's</span>' +
+        '<span class="event-name">' + eventName + '</span>' +
+        '<span class="event-detail">' + (detail || '') + '</span>';
+      logEl.appendChild(item);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function clearLog() {
+      document.getElementById('event-log').innerHTML = '';
+      state.startTime = Date.now();
+      log('cleared', 'Log cleared');
+    }
+
+    // ============================================
+    // STATUS UPDATES
+    // ============================================
+    function setStatus(id, active, error) {
+      var dot = document.getElementById('status-' + id);
+      dot.classList.remove('active', 'error');
+      if (error) dot.classList.add('error');
+      else if (active) dot.classList.add('active');
+    }
+
+    // ============================================
+    // TAB NAVIGATION
+    // ============================================
+    function showTab(tabName) {
+      document.querySelectorAll('.tab').forEach(function(t) {
+        t.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-content').forEach(function(c) {
+        c.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      document.getElementById('tab-' + tabName).classList.add('active');
+    }
+
+    // ============================================
+    // VAST PARSER (Simple)
+    // ============================================
+    function parseVAST(xmlString) {
+      var parser = new DOMParser();
+      var xml = parser.parseFromString(xmlString, 'text/xml');
+
+      var result = {
+        videoUrl: null,
+        endcardUrl: null,
+        clickUrl: null,
+        duration: null,
+        impressions: [],
+        trackingEvents: {}
+      };
+
+      // Get MediaFile URL
+      var mediaFile = xml.querySelector('MediaFile');
+      if (mediaFile) {
+        result.videoUrl = mediaFile.textContent.trim();
+      }
+
+      // Get Duration
+      var duration = xml.querySelector('Duration');
+      if (duration) {
+        result.duration = duration.textContent.trim();
+      }
+
+      // Get ClickThrough
+      var clickThrough = xml.querySelector('ClickThrough');
+      if (clickThrough) {
+        result.clickUrl = clickThrough.textContent.trim();
+      }
+
+      // Get CompanionClickThrough (for end card)
+      var companionClick = xml.querySelector('CompanionClickThrough');
+      if (companionClick) {
+        result.clickUrl = result.clickUrl || companionClick.textContent.trim();
+      }
+
+      // Get Companion HTMLResource (end card URL)
+      var htmlResource = xml.querySelector('HTMLResource');
+      if (htmlResource) {
+        var iframeSrc = htmlResource.textContent.match(/src="([^"]+)"/);
+        if (iframeSrc) {
+          result.endcardUrl = iframeSrc[1];
+        }
+      }
+
+      // Get Impressions
+      xml.querySelectorAll('Impression').forEach(function(imp) {
+        result.impressions.push(imp.textContent.trim());
+      });
+
+      // Get Tracking Events
+      xml.querySelectorAll('Tracking').forEach(function(track) {
+        var event = track.getAttribute('event');
+        if (!result.trackingEvents[event]) {
+          result.trackingEvents[event] = [];
+        }
+        result.trackingEvents[event].push(track.textContent.trim());
+      });
+
+      return result;
+    }
+
+    // ============================================
+    // LOAD VAST
+    // ============================================
+    function loadVAST() {
+      var url = document.getElementById('vast-url').value;
+      log('loading', 'Fetching VAST: ' + url);
+
+      fetch(url)
+        .then(function(response) {
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          return response.text();
+        })
+        .then(function(xmlString) {
+          document.getElementById('vast-xml').textContent = xmlString;
+
+          state.vastData = parseVAST(xmlString);
+          state.videoUrl = state.vastData.videoUrl;
+          state.endcardUrl = state.vastData.endcardUrl || 'endcard.html';
+          state.clickUrl = state.vastData.clickUrl;
+
+          log('vast_parsed', 'Video: ' + (state.videoUrl ? 'Found' : 'Not found'));
+          log('vast_parsed', 'EndCard: ' + state.endcardUrl);
+          log('vast_parsed', 'Duration: ' + state.vastData.duration);
+
+          setStatus('vast', true);
+
+          if (state.videoUrl) {
+            video.src = state.videoUrl;
+            video.load();
+          }
+        })
+        .catch(function(err) {
+          log('error', err.message);
+          setStatus('vast', false, true);
+        });
+    }
+
+    // ============================================
+    // VIDEO CONTROLS
+    // ============================================
+    function playVideo() {
+      if (!video.src) {
+        log('error', 'No video loaded');
+        return;
+      }
+      video.play();
+      log('play', 'Video playing');
+    }
+
+    function pauseVideo() {
+      video.pause();
+      log('pause', 'Video paused');
+    }
+
+    function skipToEnd() {
+      if (video.duration) {
+        video.currentTime = video.duration - 0.5;
+        log('skip', 'Skipped to end');
+      }
+    }
+
+    function showEndCard() {
+      video.pause();
+      endcardFrame.src = state.endcardUrl;
+      endcardContainer.style.display = 'block';
+      setStatus('endcard', true);
+      log('endcard_show', 'Displaying: ' + state.endcardUrl);
+    }
+
+    function hideEndCard() {
+      endcardContainer.style.display = 'none';
+      endcardFrame.src = '';
+      setStatus('endcard', false);
+    }
+
+    function resetPlayer() {
+      video.pause();
+      video.currentTime = 0;
+      hideEndCard();
+      progressFill.style.width = '0%';
+      setStatus('video', false);
+      setStatus('endcard', false);
+      log('reset', 'Player reset');
+    }
+
+    // ============================================
+    // VIDEO EVENTS
+    // ============================================
+    video.addEventListener('loadeddata', function() {
+      setStatus('video', true);
+      log('video_loaded', 'Duration: ' + video.duration.toFixed(1) + 's');
+    });
+
+    video.addEventListener('play', function() {
+      log('start', 'Video started');
+      fireTracking('start');
+    });
+
+    video.addEventListener('timeupdate', function() {
+      var percent = (video.currentTime / video.duration) * 100;
+      progressFill.style.width = percent + '%';
+
+      // Fire quartile events
+      if (percent >= 25 && !video.fired25) {
+        video.fired25 = true;
+        log('firstQuartile', '25%');
+        fireTracking('firstQuartile');
+      }
+      if (percent >= 50 && !video.fired50) {
+        video.fired50 = true;
+        log('midpoint', '50%');
+        fireTracking('midpoint');
+      }
+      if (percent >= 75 && !video.fired75) {
+        video.fired75 = true;
+        log('thirdQuartile', '75%');
+        fireTracking('thirdQuartile');
+      }
+    });
+
+    video.addEventListener('ended', function() {
+      log('complete', 'Video completed');
+      fireTracking('complete');
+      showEndCard();
+    });
+
+    video.addEventListener('error', function(e) {
+      log('error', 'Video error: ' + (video.error ? video.error.message : 'Unknown'));
+      setStatus('video', false, true);
+    });
+
+    // ============================================
+    // TRACKING (Simulated)
+    // ============================================
+    function fireTracking(eventName) {
+      if (state.vastData && state.vastData.trackingEvents[eventName]) {
+        state.vastData.trackingEvents[eventName].forEach(function(url) {
+          log('tracking_fire', eventName + ' -> ' + url.substring(0, 50) + '...');
+          // In production, you would actually fire these:
+          // new Image().src = url.replace('[CACHEBUSTING]', Date.now());
+        });
+      }
+    }
+
+    // ============================================
+    // LISTEN FOR ENDCARD MESSAGES
+    // ============================================
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'clickthrough') {
+        log('endcard_click', 'Click-through: ' + event.data.url);
+      }
+    });
+
+    // ============================================
+    // INIT
+    // ============================================
+    log('init', 'Test player ready. Enter VAST URL and click Load.');
+  </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="ad.size" content="width=320,height=480">
+  <title>Amazing Game - Install Now</title>
+
+  <!--
+    LIMELIGHT INC. INTERACTIVE END CARD
+    ===================================
+    This HTML5 end card is designed for use with VAST companion banners.
+
+    TO CUSTOMIZE:
+    1. Edit the CONFIG object in endcard.js
+    2. Replace screenshot URLs with your app screenshots
+    3. Update click-through URL to your app store listing
+    4. Update tracking URL to your tracking pixel
+
+    FILE SIZE: Keep total under 500KB including images
+    IMAGES: Use compressed JPG/PNG, max 4 screenshots
+  -->
+
+  <link rel="stylesheet" href="endcard.css">
+</head>
+<body>
+  <div class="endcard-container">
+
+    <!-- App Header: Icon + Title + Rating -->
+    <div class="app-header">
+      <div class="app-icon">
+        <img id="app-icon-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect fill='%23667eea' width='64' height='64' rx='14'/%3E%3Ctext fill='white' font-family='sans-serif' font-size='24' font-weight='bold' x='32' y='40' text-anchor='middle'%3EAG%3C/text%3E%3C/svg%3E" alt="App Icon">
+      </div>
+      <div class="app-info">
+        <div id="app-name" class="app-name">Amazing Game</div>
+        <div id="app-subtitle" class="app-subtitle">Free to Play</div>
+        <div class="rating">
+          <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span id="rating-text" class="rating-text">4.8 (125K ratings)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screenshot Carousel -->
+    <div class="carousel-container">
+      <div class="carousel-wrapper">
+        <!-- Navigation Arrows (shown on larger screens) -->
+        <button id="carousel-prev" class="carousel-arrow prev" aria-label="Previous">&#10094;</button>
+        <button id="carousel-next" class="carousel-arrow next" aria-label="Next">&#10095;</button>
+
+        <!-- Slides will be injected by JS -->
+        <div id="carousel-track" class="carousel-track"></div>
+      </div>
+
+      <!-- Navigation Dots -->
+      <div id="carousel-dots" class="carousel-dots"></div>
+    </div>
+
+    <!-- CTA Button -->
+    <div class="cta-container">
+      <button id="cta-button" class="cta-button">
+        <span id="cta-text" class="cta-text">
+          <span class="cta-icon">&#x2B07;</span> Install Now
+        </span>
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <span>Free with in-app purchases</span>
+    </div>
+
+  </div>
+
+  <script src="endcard.js"></script>
+</body>
+</html>

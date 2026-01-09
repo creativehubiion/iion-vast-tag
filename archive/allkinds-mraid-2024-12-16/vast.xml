@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0">
+<Ad id="iion-rewarded-playable">
+<InLine>
+<AdSystem version="1.0">iion</AdSystem>
+<AdTitle>Rewarded Video with Playable End Card</AdTitle>
+<Description>30s video followed by MRAID playable end card</Description>
+<Impression>
+<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=impression]]>
+</Impression>
+<Creatives>
+<!-- Main Video Creative -->
+<Creative id="video" sequence="1">
+<Linear>
+<Duration>00:00:30</Duration>
+<TrackingEvents>
+<Tracking event="start">
+<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=start]]>
+</Tracking>
+<Tracking event="firstQuartile">
+<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=firstQuartile]]>
+</Tracking>
+<Tracking event="midpoint">
+<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=midpoint]]>
+</Tracking>
+<Tracking event="thirdQuartile">
+<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=thirdQuartile]]>
+</Tracking>
+<Tracking event="complete">
+<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=complete]]>
+</Tracking>
+</TrackingEvents>
+<VideoClicks>
+<ClickThrough>
+<![CDATA[https://allkinds.com/au/]]>
+</ClickThrough>
+</VideoClicks>
+<MediaFiles>
+<MediaFile delivery="progressive" type="video/mp4" width="640" height="360" scalable="true" maintainAspectRatio="true">
+<![CDATA[https://creativehubiion.github.io/iion-vast-tag/creatives/current/cookingVideo.mp4]]>
+</MediaFile>
+</MediaFiles>
+</Linear>
+</Creative>
+<!-- MRAID Playable End Card -->
+<Creative id="endcard" sequence="2">
+<CompanionAds required="all">
+<Companion id="mraid-playable-endcard" width="320" height="480" assetWidth="320" assetHeight="480" apiFramework="MRAID">
+<IFrameResource>
+<![CDATA[https://creativehubiion.github.io/iion-vast-tag/creatives/current/mraid_endcard.html]]>
+</IFrameResource>
+<CompanionClickThrough>
+<![CDATA[https://allkinds.com/au/]]>
+</CompanionClickThrough>
+<TrackingEvents>
+<Tracking event="creativeView">
+<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=endcard_view]]>
+</Tracking>
+</TrackingEvents>
+</Companion>
+</CompanionAds>
+</Creative>
+</Creatives>
+</InLine>
+</Ad>
+</VAST>

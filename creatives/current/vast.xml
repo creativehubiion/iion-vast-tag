@@ -1,66 +1,122 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<VAST xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0">
-<Ad id="iion-rewarded-playable">
-<InLine>
-<AdSystem version="1.0">iion</AdSystem>
-<AdTitle>Rewarded Video with Playable End Card</AdTitle>
-<Description>30s video followed by MRAID playable end card</Description>
-<Impression>
-<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=impression]]>
-</Impression>
-<Creatives>
-<!-- Main Video Creative -->
-<Creative id="video" sequence="1">
-<Linear>
-<Duration>00:00:30</Duration>
-<TrackingEvents>
-<Tracking event="start">
-<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=start]]>
-</Tracking>
-<Tracking event="firstQuartile">
-<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=firstQuartile]]>
-</Tracking>
-<Tracking event="midpoint">
-<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=midpoint]]>
-</Tracking>
-<Tracking event="thirdQuartile">
-<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=thirdQuartile]]>
-</Tracking>
-<Tracking event="complete">
-<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=complete]]>
-</Tracking>
-</TrackingEvents>
-<VideoClicks>
-<ClickThrough>
-<![CDATA[https://allkinds.com/au/]]>
-</ClickThrough>
-</VideoClicks>
-<MediaFiles>
-<MediaFile delivery="progressive" type="video/mp4" width="640" height="360" scalable="true" maintainAspectRatio="true">
-<![CDATA[https://creativehubiion.github.io/iion-vast-tag/creatives/current/cookingVideo.mp4]]>
-</MediaFile>
-</MediaFiles>
-</Linear>
-</Creative>
-<!-- MRAID Playable End Card -->
-<Creative id="endcard" sequence="2">
-<CompanionAds required="all">
-<Companion id="mraid-playable-endcard" width="320" height="480" assetWidth="320" assetHeight="480" apiFramework="MRAID">
-<IFrameResource>
-<![CDATA[https://creativehubiion.github.io/iion-vast-tag/creatives/current/mraid_endcard.html]]>
-</IFrameResource>
-<CompanionClickThrough>
-<![CDATA[https://allkinds.com/au/]]>
-</CompanionClickThrough>
-<TrackingEvents>
-<Tracking event="creativeView">
-<![CDATA[https://staging-dmp-producer.iion.io/tracker/impressions?event_name=endcard_view]]>
-</Tracking>
-</TrackingEvents>
-</Companion>
-</CompanionAds>
-</Creative>
-</Creatives>
-</InLine>
-</Ad>
+<!--
+  VAST 4.0 Demand-Side Template for Limelight Inc. Marketplace
+
+  This is an ADVERTISER creative - reward handling is done by the publisher's SDK.
+  Your job: Provide compelling video + interactive end card.
+
+  CUSTOMIZATION GUIDE:
+  ====================
+  1. VIDEO: Replace https://cdn.example.com/video.mp4 with your video URL
+  2. END CARD: Replace endcard URL with your hosted endcard.html
+  3. CLICK URL: Replace https://apps.apple.com/app/amazing-game with your store URL
+  4. TRACKING: Replace https://tracking.example.com/pixel with your tracker
+
+  MACROS SUPPORTED BY LIMELIGHT:
+  ==============================
+  [CACHEBUSTING] - Random number for cache busting
+  [TIMESTAMP]    - Unix timestamp
+  [ASSETURI]     - Asset URL being loaded
+  [ERRORCODE]    - VAST error code (in error URLs)
+-->
+<VAST version="4.0" xmlns="http://www.iab.com/VAST">
+  <Ad id="amazing-game-rewarded-001">
+    <InLine>
+      <AdSystem version="1.0">iion-DSP</AdSystem>
+      <AdTitle>Amazing Game</AdTitle>
+      <Description>Experience the thrill of Amazing Game - Download Free!</Description>
+      <Advertiser>Amazing Game Inc.</Advertiser>
+
+      <!-- Error Tracking -->
+      <Error><![CDATA[https://tracking.example.com/pixel?event=error&code=[ERRORCODE]&cb=[CACHEBUSTING]]]></Error>
+
+      <!-- Impression - Fires when video starts -->
+      <Impression id="imp-1"><![CDATA[https://tracking.example.com/pixel?event=impression&cb=[CACHEBUSTING]]]></Impression>
+
+      <Creatives>
+        <!-- ========================================== -->
+        <!-- VIDEO CREATIVE (15 seconds)               -->
+        <!-- ========================================== -->
+        <Creative id="video" sequence="1">
+          <Linear>
+            <Duration>00:00:15</Duration>
+
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[https://tracking.example.com/pixel?event=start&cb=[CACHEBUSTING]]]></Tracking>
+              <Tracking event="firstQuartile"><![CDATA[https://tracking.example.com/pixel?event=firstQuartile&cb=[CACHEBUSTING]]]></Tracking>
+              <Tracking event="midpoint"><![CDATA[https://tracking.example.com/pixel?event=midpoint&cb=[CACHEBUSTING]]]></Tracking>
+              <Tracking event="thirdQuartile"><![CDATA[https://tracking.example.com/pixel?event=thirdQuartile&cb=[CACHEBUSTING]]]></Tracking>
+              <Tracking event="complete"><![CDATA[https://tracking.example.com/pixel?event=complete&cb=[CACHEBUSTING]]]></Tracking>
+              <Tracking event="mute"><![CDATA[https://tracking.example.com/pixel?event=mute&cb=[CACHEBUSTING]]]></Tracking>
+              <Tracking event="unmute"><![CDATA[https://tracking.example.com/pixel?event=unmute&cb=[CACHEBUSTING]]]></Tracking>
+              <Tracking event="pause"><![CDATA[https://tracking.example.com/pixel?event=pause&cb=[CACHEBUSTING]]]></Tracking>
+              <Tracking event="resume"><![CDATA[https://tracking.example.com/pixel?event=resume&cb=[CACHEBUSTING]]]></Tracking>
+            </TrackingEvents>
+
+            <VideoClicks>
+              <ClickThrough id="store"><![CDATA[https://apps.apple.com/app/amazing-game]]></ClickThrough>
+              <ClickTracking id="click-1"><![CDATA[https://tracking.example.com/pixel?event=video_click&cb=[CACHEBUSTING]]]></ClickTracking>
+            </VideoClicks>
+
+            <MediaFiles>
+              <!-- 720p Video (Primary) - Hosted on GitHub Pages -->
+              <MediaFile delivery="progressive" type="video/mp4" width="1280" height="720" bitrate="1500" scalable="true" maintainAspectRatio="true">
+                <![CDATA[https://creativehubiion.github.io/iion-vast-tag/creatives/current/video.mp4]]>
+              </MediaFile>
+            </MediaFiles>
+          </Linear>
+        </Creative>
+
+        <!-- ========================================== -->
+        <!-- INTERACTIVE END CARD (Companion Banner)   -->
+        <!-- Shows after video completes               -->
+        <!-- ========================================== -->
+        <Creative id="endcard" sequence="2">
+          <CompanionAds required="all">
+            <!-- Portrait (320x480) - Primary Mobile -->
+            <Companion id="endcard-portrait" width="320" height="480" assetWidth="320" assetHeight="480" apiFramework="HTML5">
+              <HTMLResource>
+                <![CDATA[
+                <iframe src="https://creativehubiion.github.io/iion-vast-tag/creatives/current/endcard.html" width="100%" height="100%" frameborder="0" scrolling="no" style="border:none;"></iframe>
+                ]]>
+              </HTMLResource>
+              <TrackingEvents>
+                <Tracking event="creativeView"><![CDATA[https://tracking.example.com/pixel?event=endcard_view&cb=[CACHEBUSTING]]]></Tracking>
+              </TrackingEvents>
+              <CompanionClickThrough><![CDATA[https://apps.apple.com/app/amazing-game]]></CompanionClickThrough>
+              <CompanionClickTracking><![CDATA[https://tracking.example.com/pixel?event=endcard_click&cb=[CACHEBUSTING]]]></CompanionClickTracking>
+            </Companion>
+
+            <!-- Landscape (480x320) - Tablet -->
+            <Companion id="endcard-landscape" width="480" height="320" assetWidth="480" assetHeight="320" apiFramework="HTML5">
+              <HTMLResource>
+                <![CDATA[
+                <iframe src="https://creativehubiion.github.io/iion-vast-tag/creatives/current/endcard.html" width="100%" height="100%" frameborder="0" scrolling="no" style="border:none;"></iframe>
+                ]]>
+              </HTMLResource>
+              <TrackingEvents>
+                <Tracking event="creativeView"><![CDATA[https://tracking.example.com/pixel?event=endcard_view&cb=[CACHEBUSTING]]]></Tracking>
+              </TrackingEvents>
+              <CompanionClickThrough><![CDATA[https://apps.apple.com/app/amazing-game]]></CompanionClickThrough>
+              <CompanionClickTracking><![CDATA[https://tracking.example.com/pixel?event=endcard_click&cb=[CACHEBUSTING]]]></CompanionClickTracking>
+            </Companion>
+
+            <!-- Full Size (responsive) -->
+            <Companion id="endcard-full" width="0" height="0" assetWidth="0" assetHeight="0" apiFramework="HTML5">
+              <HTMLResource>
+                <![CDATA[
+                <iframe src="https://creativehubiion.github.io/iion-vast-tag/creatives/current/endcard.html" width="100%" height="100%" frameborder="0" scrolling="no" style="border:none;"></iframe>
+                ]]>
+              </HTMLResource>
+              <TrackingEvents>
+                <Tracking event="creativeView"><![CDATA[https://tracking.example.com/pixel?event=endcard_view&cb=[CACHEBUSTING]]]></Tracking>
+              </TrackingEvents>
+              <CompanionClickThrough><![CDATA[https://apps.apple.com/app/amazing-game]]></CompanionClickThrough>
+              <CompanionClickTracking><![CDATA[https://tracking.example.com/pixel?event=endcard_click&cb=[CACHEBUSTING]]]></CompanionClickTracking>
+            </Companion>
+          </CompanionAds>
+        </Creative>
+      </Creatives>
+    </InLine>
+  </Ad>
 </VAST>
